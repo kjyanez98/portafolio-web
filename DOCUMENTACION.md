@@ -1,7 +1,7 @@
 # Documentación Técnica — Portafolio Profesional
 **Kevin Jara** | Fullstack Engineer & Industrial Automation Specialist  
 **Stack:** Next.js 16 · React 19 · Tailwind CSS v4 · TypeScript · Vercel  
-**Versión del documento:** 1.1 | Mayo 2026
+**Versión del documento:** 1.2 | Mayo 2026
 
 ---
 
@@ -38,6 +38,15 @@
    - 4.3 [Comandos de referencia rápida](#43-comandos-de-referencia-rápida)
 
 6. [Glosario de Términos](#6-glosario-de-términos)
+
+7. [Observabilidad — Vercel Analytics & Speed Insights](#7-observabilidad--vercel-analytics--speed-insights)
+   - 7.1 [Qué problema resuelven](#71-qué-problema-resuelven)
+   - 7.2 [Vercel Analytics — métricas de audiencia](#72-vercel-analytics--métricas-de-audiencia)
+   - 7.3 [Speed Insights — Web Vitals en producción](#73-speed-insights--web-vitals-en-producción)
+   - 7.4 [Cómo está integrado en el código](#74-cómo-está-integrado-en-el-código)
+   - 7.5 [Activar el dashboard en Vercel](#75-activar-el-dashboard-en-vercel)
+   - 7.6 [Cómo leer los datos e iterar](#76-cómo-leer-los-datos-e-iterar)
+   - 7.7 [Privacidad y cumplimiento](#77-privacidad-y-cumplimiento)
 
 ---
 
@@ -1158,5 +1167,187 @@ Las props son **de solo lectura** — un componente hijo no puede modificar sus 
 
 ---
 
-*Fin de la documentación — Versión 1.0*  
+## 7. Observabilidad — Vercel Analytics & Speed Insights
+
+Esta sección explica qué miden las dos herramientas de observabilidad integradas, cómo leer sus datos y qué decisiones técnicas permiten tomar.
+
+### 7.1 Qué problema resuelven
+
+Un portafolio que funciona en tu máquina puede comportarse diferente para un reclutador en Santiago con conexión 4G, o para un hiring manager en España con un MacBook Pro. Sin métricas reales no sabes si el sitio carga en 0.8 s o en 4 s para tus visitantes. Las dos herramientas de Vercel cubren ángulos distintos:
+
+| Herramienta | Pregunta que responde | Datos que entrega |
+|---|---|---|
+| **Vercel Analytics** | ¿Quién visita el sitio y cómo navega? | Página vistas, visitantes únicos, referrers, países, dispositivos |
+| **Speed Insights** | ¿Qué tan rápido carga para usuarios reales? | Web Vitals: LCP, FCP, CLS, FID/INP, TTFB |
+
+Son complementarias: Analytics te dice *cuánta* gente llega, Speed Insights te dice *qué experiencia* tienen.
+
+### 7.2 Vercel Analytics — métricas de audiencia
+
+**Vercel Analytics** es un sistema de analítica web de privacidad respetuosa. A diferencia de Google Analytics, no usa cookies de seguimiento ni comparte datos con terceros. Solo registra visitas de página anonimizadas.
+
+**Qué mide:**
+
+- **Page views**: cuántas veces se cargó cada ruta (`/`, `/about`, etc.)
+- **Unique visitors**: visitantes distintos estimados (sin cookies, usa heurísticas de IP + user-agent hasheados)
+- **Top referrers**: desde dónde llegó el tráfico — LinkedIn, GitHub, búsqueda directa
+- **Countries**: distribución geográfica de visitantes
+- **Device types**: móvil vs. desktop vs. tablet
+- **Operating systems y browsers**
+
+**Cómo funciona técnicamente:**
+
+El componente `<Analytics />` inyecta un script ligero (~1 KB) que reporta cada carga de página al endpoint de Vercel. No bloquea el render principal porque se carga con `strategy="afterInteractive"` de forma implícita — es decir, después de que la página ya es interactiva.
+
+```tsx
+// app/layout.tsx — el componente se renderiza fuera del árbol de UI
+// para garantizar que no afecta la hidratación de React
+<Analytics />
+```
+
+**Dónde ver los datos:** Dashboard de Vercel → tu proyecto → pestaña **Analytics**.
+
+**Plan gratuito:** incluye 2.500 eventos/mes. Para un portafolio personal es más que suficiente (incluso con visitas frecuentes de reclutadores).
+
+### 7.3 Speed Insights — Web Vitals en producción
+
+**Speed Insights** captura métricas de rendimiento de usuarios reales (Real User Monitoring, RUM). Es diferente a herramientas sintéticas como Lighthouse: Lighthouse simula una carga en condiciones controladas, Speed Insights mide lo que realmente experimenta cada visitante.
+
+**Los 6 Web Vitals:**
+
+#### LCP — Largest Contentful Paint
+**Qué mide:** tiempo hasta que el elemento visual más grande de la página se renderiza completamente. Para este portafolio, el LCP suele ser el título principal del Hero.
+
+**Umbrales:**
+- ✅ Bueno: < 2.5 s
+- ⚠️ Necesita mejora: 2.5 – 4.0 s
+- ❌ Malo: > 4.0 s
+
+**Por qué importa:** es el indicador principal de "¿cuándo el usuario siente que la página cargó?". Un LCP alto hace que el sitio se perciba lento aunque el resto funcione bien.
+
+#### FCP — First Contentful Paint
+**Qué mide:** tiempo hasta que cualquier contenido (texto, imagen) aparece por primera vez. Siempre es ≤ LCP.
+
+**Umbrales:**
+- ✅ Bueno: < 1.8 s
+- ⚠️ Necesita mejora: 1.8 – 3.0 s
+- ❌ Malo: > 3.0 s
+
+**Analogía:** FCP es cuando el proceso arranca (primer signo de vida), LCP es cuando está estabilizado y operativo.
+
+#### CLS — Cumulative Layout Shift
+**Qué mide:** cuánto se mueve el contenido de la página inesperadamente durante la carga. Se mide como una puntuación (no en segundos) basada en la fracción de pantalla desplazada × distancia recorrida.
+
+**Umbrales:**
+- ✅ Bueno: < 0.1
+- ⚠️ Necesita mejora: 0.1 – 0.25
+- ❌ Malo: > 0.25
+
+**Causa común:** imágenes sin dimensiones definidas, fuentes web que reemplazan el texto de sistema. Next.js mitiga ambas: el componente `<Image>` reserva espacio, y `next/font` precarga las fuentes para evitar el FOIT (Flash of Invisible Text).
+
+#### FID — First Input Delay *(deprecado, reemplazado por INP)*
+**Qué medía:** retardo entre el primer clic/tap del usuario y cuando el navegador puede procesar ese evento. Indicaba si el hilo principal estaba bloqueado durante la carga.
+
+#### INP — Interaction to Next Paint *(reemplazó a FID en 2024)*
+**Qué mide:** latencia de todas las interacciones del usuario durante la sesión, no solo la primera. Es una medida más completa de la responsividad general.
+
+**Umbrales:**
+- ✅ Bueno: < 200 ms
+- ⚠️ Necesita mejora: 200 – 500 ms
+- ❌ Malo: > 500 ms
+
+**Para este portafolio:** el INP suele ser excelente porque no hay operaciones pesadas en el hilo principal — solo animaciones CSS/Framer Motion que corren en el compositor.
+
+#### TTFB — Time to First Byte
+**Qué mide:** tiempo desde que el navegador hace la petición HTTP hasta que recibe el primer byte de la respuesta del servidor.
+
+**Umbrales:**
+- ✅ Bueno: < 800 ms
+- ⚠️ Necesita mejora: 800 ms – 1.8 s
+- ❌ Malo: > 1.8 s
+
+**Por qué este portafolio tiene TTFB casi perfecto:** el sitio usa SSG (Static Site Generation). Vercel sirve HTML pre-generado desde su CDN edge (el nodo más cercano al usuario), sin tiempo de ejecución de servidor. No hay base de datos que consultar, no hay API que esperar.
+
+### 7.4 Cómo está integrado en el código
+
+La integración completa son exactamente 4 líneas en `app/layout.tsx`:
+
+```tsx
+// Imports en el tope del archivo
+import { Analytics } from '@vercel/analytics/next'
+import { SpeedInsights } from '@vercel/speed-insights/next'
+
+// Componentes en el JSX, fuera del árbol de UI principal
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="es" ...>
+      <body ...>
+        <ThemeProvider>
+          <LanguageProvider>{children}</LanguageProvider>
+        </ThemeProvider>
+        <Analytics />        {/* ← Reporta page views a Vercel */}
+        <SpeedInsights />    {/* ← Reporta Web Vitals a Vercel */}
+      </body>
+    </html>
+  )
+}
+```
+
+Se colocan **dentro del `<body>`** pero **fuera de los providers** porque:
+- No necesitan acceso al contexto de tema ni idioma
+- Se renderizan una sola vez como Server Components — sin hidratación de cliente innecesaria
+- Estar al final del body no bloquea el renderizado del contenido principal
+
+### 7.5 Activar el dashboard en Vercel
+
+Los componentes ya están en el código, pero el dashboard de Vercel necesita habilitarse una vez:
+
+1. Ir a [vercel.com](https://vercel.com) → tu proyecto → pestaña **Analytics**
+2. Hacer clic en **Enable Analytics** (el plan Hobby ya incluye la cuota gratuita)
+3. Para Speed Insights: pestaña **Speed Insights** → **Enable**
+4. Hacer un deploy (o esperar el siguiente `git push`) — los datos aparecen en minutos tras las primeras visitas reales
+
+**Nota:** los datos solo se recopilan en producción (`vercel.com` o tu dominio). En desarrollo local (`localhost:3000`) los componentes están presentes pero no envían datos.
+
+### 7.6 Cómo leer los datos e iterar
+
+**Flujo de mejora continua:**
+
+```
+Vercel Analytics           Speed Insights
+       ↓                         ↓
+"El 60% del tráfico      "LCP = 3.2 s en móvil"
+ viene de LinkedIn"              ↓
+       ↓               Identificar elemento LCP
+"Los visitantes móviles   → es la imagen del Hero
+ rebotan más rápido"             ↓
+       ↓               Optimizar: añadir priority
+"Priorizar experiencia     a next/image o reducir
+ móvil en el Hero"         el tamaño del asset
+```
+
+**Señales a monitorear mensualmente:**
+
+| Métrica | Señal de alerta | Acción |
+|---|---|---|
+| LCP > 2.5 s | Recurso pesado bloqueando | Comprimir imágenes, agregar `priority` |
+| CLS > 0.1 | Layout shift visible | Definir dimensiones de imágenes/fonts |
+| INP > 200 ms | JS bloqueando interacción | Revisar animaciones, lazy load de secciones |
+| TTFB > 800 ms | Problema de edge network | Verificar región de deploy en Vercel |
+| Tráfico móvil > 50% | Mayoría en dispositivos pequeños | Auditar breakpoints y tamaños de fuente |
+
+### 7.7 Privacidad y cumplimiento
+
+Vercel Analytics está diseñado para cumplir con GDPR sin banner de cookies porque:
+
+- No usa cookies persistentes de seguimiento
+- No vincula datos a identidades personales
+- Los datos se agregan antes de ser almacenados
+- No comparte datos con terceros publicitarios
+
+Para un portafolio personal en la UE esto significa que **no necesitas un banner de cookies** para Vercel Analytics (a diferencia de Google Analytics 4 sin configuración adicional).
+
+---
+
+*Fin de la documentación — Versión 1.2*  
 *Este documento debe actualizarse cada vez que se incorporen nuevas tecnologías o proyectos al portafolio.*
