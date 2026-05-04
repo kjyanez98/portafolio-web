@@ -1,37 +1,37 @@
 export type SkillCategory = {
-  name: string
+  name: { es: string; en: string }
   icon: string
   skills: string[]
 }
 
 export const skillCategories: SkillCategory[] = [
   {
-    name: 'Lenguajes',
+    name: { es: 'Lenguajes', en: 'Languages' },
     icon: 'Code2',
     skills: ['Python', 'TypeScript', 'JavaScript', 'SQL'],
   },
   {
-    name: 'Frontend & Backend',
+    name: { es: 'Frontend & Backend', en: 'Frontend & Backend' },
     icon: 'Layout',
     skills: ['React', 'Next.js', 'Node.js', 'Express', 'PostgreSQL'],
   },
   {
-    name: 'Visión Artificial',
+    name: { es: 'Visión Artificial', en: 'Computer Vision' },
     icon: 'Eye',
-    skills: ['OpenCV', 'Computer Vision', 'Procesamiento de Imágenes', 'Detección de Patrones'],
+    skills: ['OpenCV', 'Computer Vision', 'Image Processing', 'Pattern Detection'],
   },
   {
-    name: 'Automatización Industrial',
+    name: { es: 'Automatización Industrial', en: 'Industrial Automation' },
     icon: 'Settings',
-    skills: ['PLCs', 'SCADA', 'DCS', 'Instrumentación', 'Protocolos Industriales'],
+    skills: ['PLCs', 'SCADA', 'DCS', 'Instrumentation', 'Industrial Protocols'],
   },
   {
-    name: 'Energía & Electricidad',
+    name: { es: 'Energía & Electricidad', en: 'Energy & Electrical' },
     icon: 'Zap',
-    skills: ['Sistemas Fotovoltaicos', 'UPS Industrial', 'Electrónica de Potencia'],
+    skills: ['Photovoltaic Systems', 'Industrial UPS', 'Power Electronics'],
   },
   {
-    name: 'Herramientas & DevOps',
+    name: { es: 'Herramientas & DevOps', en: 'Tools & DevOps' },
     icon: 'Wrench',
     skills: ['Git', 'GitHub', 'Vercel', 'Docker', 'Linux'],
   },

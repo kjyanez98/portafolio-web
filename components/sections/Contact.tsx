@@ -4,32 +4,34 @@ import { useRef, useState } from 'react'
 import { motion, useInView } from 'framer-motion'
 import { Mail, Send } from 'lucide-react'
 import { GitHubIcon, LinkedInIcon } from '@/components/ui/SocialIcons'
-
-const contactLinks = [
-  {
-    icon: Mail,
-    label: 'Email',
-    value: 'kevinkjyh500@gmail.com',
-    href: 'mailto:kevinkjyh500@gmail.com',
-  },
-  {
-    icon: GitHubIcon,
-    label: 'GitHub',
-    value: 'github.com/kjyanez98',
-    href: 'https://github.com/kjyanez98/',
-  },
-  {
-    icon: LinkedInIcon,
-    label: 'LinkedIn',
-    value: 'linkedin.com/in/kevinjara',
-    href: 'https://linkedin.com/in/kevinjara',
-  },
-]
+import { useLanguage } from '@/contexts/LanguageContext'
 
 export default function Contact() {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: '-100px' })
   const [form, setForm] = useState({ name: '', email: '', message: '' })
+  const { t } = useLanguage()
+
+  const contactLinks = [
+    {
+      icon: Mail,
+      label: 'Email',
+      value: 'kevinkjyh500@gmail.com',
+      href: 'mailto:kevinkjyh500@gmail.com',
+    },
+    {
+      icon: GitHubIcon,
+      label: 'GitHub',
+      value: 'github.com/kjyanez98',
+      href: 'https://github.com/kjyanez98/',
+    },
+    {
+      icon: LinkedInIcon,
+      label: 'LinkedIn',
+      value: 'linkedin.com/in/kevin-yañez',
+      href: 'https://www.linkedin.com/in/kevin-ya%C3%B1ez-huayllas-848438208/',
+    },
+  ]
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -52,13 +54,13 @@ export default function Contact() {
           className="text-center mb-16"
         >
           <span className="text-sky-500 text-sm font-semibold tracking-widest uppercase mb-4 block">
-            Contacto
+            {t.contact.label}
           </span>
           <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white mb-4">
-            Hablemos
+            {t.contact.title}
           </h2>
           <p className="text-slate-600 dark:text-slate-400 max-w-md mx-auto">
-            Abierto a oportunidades de trabajo, colaboraciones y proyectos interesantes.
+            {t.contact.subtitle}
           </p>
         </motion.div>
 
@@ -69,7 +71,7 @@ export default function Contact() {
             transition={{ duration: 0.6, delay: 0.2 }}
           >
             <h3 className="text-base font-semibold text-slate-900 dark:text-white mb-5">
-              Conéctate conmigo
+              {t.contact.connect}
             </h3>
             <div className="space-y-3">
               {contactLinks.map(({ icon: Icon, label, value, href }) => (
@@ -102,11 +104,8 @@ export default function Contact() {
             className="space-y-4"
           >
             <div>
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
-              >
-                Nombre
+              <label htmlFor="name" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                {t.contact.name_label}
               </label>
               <input
                 id="name"
@@ -115,15 +114,12 @@ export default function Contact() {
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                 className={inputClass}
-                placeholder="Tu nombre"
+                placeholder={t.contact.name_placeholder}
               />
             </div>
             <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
-              >
-                Email
+              <label htmlFor="email" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                {t.contact.email_label}
               </label>
               <input
                 id="email"
@@ -132,15 +128,12 @@ export default function Contact() {
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
                 className={inputClass}
-                placeholder="tu@email.com"
+                placeholder={t.contact.email_placeholder}
               />
             </div>
             <div>
-              <label
-                htmlFor="message"
-                className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
-              >
-                Mensaje
+              <label htmlFor="message" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                {t.contact.message_label}
               </label>
               <textarea
                 id="message"
@@ -149,14 +142,14 @@ export default function Contact() {
                 value={form.message}
                 onChange={(e) => setForm({ ...form, message: e.target.value })}
                 className={`${inputClass} resize-none`}
-                placeholder="Cuéntame sobre tu proyecto o propuesta..."
+                placeholder={t.contact.message_placeholder}
               />
             </div>
             <button
               type="submit"
               className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-sky-500 hover:bg-sky-600 active:bg-sky-700 text-white font-semibold transition-colors"
             >
-              Enviar mensaje
+              {t.contact.send}
               <Send size={16} />
             </button>
           </motion.form>
@@ -165,7 +158,7 @@ export default function Contact() {
 
       <div className="mt-24 pt-8 border-t border-slate-200 dark:border-slate-800 text-center">
         <p className="text-sm text-slate-400 dark:text-slate-600">
-          © {new Date().getFullYear()} Kevin Jara. Construido con Next.js & Tailwind CSS.
+          © {new Date().getFullYear()} Kevin Jara. {t.contact.footer}
         </p>
       </div>
     </section>

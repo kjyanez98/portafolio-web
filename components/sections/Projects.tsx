@@ -5,37 +5,32 @@ import { motion, useInView } from 'framer-motion'
 import { ExternalLink, Cpu, Wrench, Zap } from 'lucide-react'
 import { GitHubIcon } from '@/components/ui/SocialIcons'
 import { projects, type ProjectCategory } from '@/data/projects'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 type CategoryConfig = {
-  label: string
   icon: React.ElementType
   badge: string
 }
 
 const categoryConfig: Record<ProjectCategory, CategoryConfig> = {
   software: {
-    label: 'Software & IA',
     icon: Cpu,
-    badge:
-      'bg-sky-100 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 border-sky-200 dark:border-sky-800',
+    badge: 'bg-sky-100 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 border-sky-200 dark:border-sky-800',
   },
   industrial: {
-    label: 'Industrial',
     icon: Wrench,
-    badge:
-      'bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800',
+    badge: 'bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800',
   },
   energy: {
-    label: 'Energía',
     icon: Zap,
-    badge:
-      'bg-green-100 dark:bg-green-950/60 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800',
+    badge: 'bg-green-100 dark:bg-green-950/60 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800',
   },
 }
 
 export default function Projects() {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: '-100px' })
+  const { lang, t } = useLanguage()
 
   return (
     <section id="projects" className="py-24 px-4">
@@ -48,10 +43,10 @@ export default function Projects() {
           className="text-center mb-16"
         >
           <span className="text-sky-500 text-sm font-semibold tracking-widest uppercase mb-4 block">
-            Proyectos
+            {t.projects.label}
           </span>
           <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white">
-            Trabajo técnico destacado
+            {t.projects.title}
           </h2>
         </motion.div>
 
@@ -69,11 +64,9 @@ export default function Projects() {
                 className="group p-6 rounded-xl bg-white dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 hover:border-sky-300 dark:hover:border-sky-700 transition-all duration-300 hover:shadow-lg hover:shadow-sky-500/5 dark:hover:shadow-sky-500/10 flex flex-col"
               >
                 <div className="flex items-start justify-between mb-4">
-                  <span
-                    className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border ${config.badge}`}
-                  >
+                  <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border ${config.badge}`}>
                     <Icon size={11} />
-                    {config.label}
+                    {t.projects.category[project.category]}
                   </span>
                   <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     {project.github && (
@@ -105,17 +98,19 @@ export default function Projects() {
                   {project.title}
                 </h3>
                 <p className="text-sm text-sky-600 dark:text-sky-400 font-medium mb-3">
-                  {project.subtitle}
+                  {project.subtitle[lang]}
                 </p>
                 <p className="text-sm text-slate-600 dark:text-slate-400 mb-4 leading-relaxed flex-1">
-                  {project.description}
+                  {project.description[lang]}
                 </p>
 
                 <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-900/60 border border-slate-100 dark:border-slate-800 mb-4">
                   <p className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1">
-                    Logro técnico
+                    {t.projects.achievement_label}
                   </p>
-                  <p className="text-sm text-slate-700 dark:text-slate-300">{project.achievement}</p>
+                  <p className="text-sm text-slate-700 dark:text-slate-300">
+                    {project.achievement[lang]}
+                  </p>
                 </div>
 
                 <div className="flex flex-wrap gap-2">

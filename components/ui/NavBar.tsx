@@ -3,20 +3,14 @@
 import { useState, useEffect } from 'react'
 import { useTheme } from 'next-themes'
 import { Moon, Sun, Menu, X } from 'lucide-react'
-
-const navLinks = [
-  { label: 'Inicio', href: '#hero' },
-  { label: 'Sobre mí', href: '#about' },
-  { label: 'Proyectos', href: '#projects' },
-  { label: 'Habilidades', href: '#skills' },
-  { label: 'Contacto', href: '#contact' },
-]
+import { useLanguage } from '@/contexts/LanguageContext'
 
 export default function NavBar() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileOpen, setIsMobileOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
   const { theme, setTheme } = useTheme()
+  const { lang, setLang, t } = useLanguage()
 
   useEffect(() => {
     setMounted(true)
@@ -24,6 +18,14 @@ export default function NavBar() {
     window.addEventListener('scroll', onScroll)
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
+
+  const navLinks = [
+    { label: t.nav.home, href: '#hero' },
+    { label: t.nav.about, href: '#about' },
+    { label: t.nav.projects, href: '#projects' },
+    { label: t.nav.skills, href: '#skills' },
+    { label: t.nav.contact, href: '#contact' },
+  ]
 
   return (
     <header
@@ -54,7 +56,35 @@ export default function NavBar() {
           ))}
         </ul>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
+          {/* Language toggle */}
+          <div className="flex items-center gap-0.5 mr-1">
+            <button
+              onClick={() => setLang('es')}
+              className={`px-2 py-1 text-xs font-semibold rounded transition-colors ${
+                lang === 'es'
+                  ? 'text-sky-500'
+                  : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'
+              }`}
+              aria-label="Español"
+            >
+              ES
+            </button>
+            <span className="text-slate-300 dark:text-slate-700 text-xs">|</span>
+            <button
+              onClick={() => setLang('en')}
+              className={`px-2 py-1 text-xs font-semibold rounded transition-colors ${
+                lang === 'en'
+                  ? 'text-sky-500'
+                  : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'
+              }`}
+              aria-label="English"
+            >
+              EN
+            </button>
+          </div>
+
+          {/* Theme toggle */}
           {mounted && (
             <button
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
@@ -65,6 +95,7 @@ export default function NavBar() {
             </button>
           )}
 
+          {/* Mobile menu button */}
           <button
             className="md:hidden p-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
             onClick={() => setIsMobileOpen(!isMobileOpen)}

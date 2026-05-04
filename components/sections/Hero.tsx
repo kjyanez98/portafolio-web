@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion'
 import { ArrowDown, Mail } from 'lucide-react'
 import { GitHubIcon, LinkedInIcon } from '@/components/ui/SocialIcons'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 const socialLinks = [
   { href: 'https://github.com/kjyanez98', icon: GitHubIcon, label: 'GitHub' },
@@ -11,13 +12,14 @@ const socialLinks = [
 ]
 
 export default function Hero() {
+  const { t } = useLanguage()
+
   return (
     <section
       id="hero"
       className="relative min-h-screen flex items-center justify-center overflow-hidden px-4 pt-16"
     >
       <div className="absolute inset-0 bg-gradient-to-br from-white via-sky-50/50 to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 -z-10" />
-
       <div
         className="absolute inset-0 -z-10 opacity-30 dark:opacity-10"
         style={{
@@ -35,7 +37,7 @@ export default function Hero() {
           className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-100 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 text-sm font-medium mb-8 border border-sky-200 dark:border-sky-800"
         >
           <span className="w-2 h-2 rounded-full bg-sky-500 animate-pulse" />
-          Disponible para nuevos proyectos
+          {t.hero.badge}
         </motion.div>
 
         <motion.h1
@@ -53,7 +55,7 @@ export default function Hero() {
           transition={{ duration: 0.5, delay: 0.15 }}
           className="text-2xl sm:text-3xl font-semibold text-sky-500 dark:text-sky-400 mb-6"
         >
-          Fullstack Engineer
+          {t.hero.role}
         </motion.p>
 
         <motion.p
@@ -62,20 +64,11 @@ export default function Hero() {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed"
         >
-          Desarrollo soluciones donde el mundo físico y el digital convergen.
-          Especializado en{' '}
-          <span className="text-slate-800 dark:text-slate-200 font-semibold">
-            visión artificial
-          </span>
-          ,{' '}
-          <span className="text-slate-800 dark:text-slate-200 font-semibold">
-            automatización industrial
-          </span>{' '}
-          y{' '}
-          <span className="text-slate-800 dark:text-slate-200 font-semibold">
-            desarrollo web fullstack
-          </span>
-          .
+          {t.hero.description_prefix}{' '}
+          <span className="text-slate-800 dark:text-slate-200 font-semibold">{t.hero.vision}</span>,{' '}
+          <span className="text-slate-800 dark:text-slate-200 font-semibold">{t.hero.automation}</span>{' '}
+          {t.hero.conjunction}{' '}
+          <span className="text-slate-800 dark:text-slate-200 font-semibold">{t.hero.fullstack}</span>.
         </motion.p>
 
         <motion.div
@@ -88,13 +81,13 @@ export default function Hero() {
             href="#projects"
             className="px-8 py-3 rounded-lg bg-sky-500 hover:bg-sky-600 text-white font-semibold transition-colors text-center"
           >
-            Ver proyectos
+            {t.hero.cta_projects}
           </a>
           <a
             href="/cv.pdf"
             className="px-8 py-3 rounded-lg border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-sky-500 hover:text-sky-600 dark:hover:border-sky-500 dark:hover:text-sky-400 font-semibold transition-colors text-center"
           >
-            Descargar CV
+            {t.hero.cta_cv}
           </a>
         </motion.div>
 

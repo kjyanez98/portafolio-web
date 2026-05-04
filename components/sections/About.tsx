@@ -2,17 +2,12 @@
 
 import { useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
-
-const stats = [
-  { value: '4+', label: 'Años en industria' },
-  { value: 'PERN', label: 'Stack dominado' },
-  { value: '4', label: 'Proyectos técnicos' },
-  { value: '∞', label: 'Aprendizaje continuo' },
-]
+import { useLanguage } from '@/contexts/LanguageContext'
 
 export default function About() {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: '-100px' })
+  const { t } = useLanguage()
 
   return (
     <section id="about" className="py-24 px-4 bg-slate-50 dark:bg-slate-900/40">
@@ -24,31 +19,21 @@ export default function About() {
             transition={{ duration: 0.6 }}
           >
             <span className="text-sky-500 text-sm font-semibold tracking-widest uppercase mb-4 block">
-              Sobre mí
+              {t.about.label}
             </span>
             <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white mb-6 leading-tight">
-              Del mundo físico<br />al digital
+              {t.about.title[0]}<br />{t.about.title[1]}
             </h2>
             <div className="space-y-4 text-slate-600 dark:text-slate-400 leading-relaxed">
               <p>
-                Soy ingeniero con experiencia en entornos industriales críticos — minas, plantas de
-                proceso y sistemas de energía — donde desarrollé una intuición técnica que pocos
-                programadores tienen:{' '}
+                {t.about.p1_before}
                 <span className="text-slate-800 dark:text-slate-200 font-semibold">
-                  el software que construyo tiene consecuencias físicas reales
+                  {t.about.p1_highlight}
                 </span>
                 .
               </p>
-              <p>
-                Esta perspectiva me llevó a especializarme en visión artificial para automatización
-                industrial, integrando Python con sistemas de control distribuido (DCS) para crear
-                soluciones que responden en tiempo real a eventos físicos.
-              </p>
-              <p>
-                Hoy amplío ese perfil hacia el desarrollo fullstack con el stack PERN y data
-                science, buscando roles donde la ingeniería de software y el mundo físico se
-                conecten.
-              </p>
+              <p>{t.about.p2}</p>
+              <p>{t.about.p3}</p>
             </div>
           </motion.div>
 
@@ -58,7 +43,7 @@ export default function About() {
             transition={{ duration: 0.6, delay: 0.15 }}
             className="grid grid-cols-2 gap-4"
           >
-            {stats.map((stat) => (
+            {t.about.stats.map((stat) => (
               <div
                 key={stat.label}
                 className="p-6 rounded-xl bg-white dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-center hover:border-sky-300 dark:hover:border-sky-700 transition-colors"

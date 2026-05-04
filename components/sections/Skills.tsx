@@ -4,12 +4,14 @@ import { useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
 import { Code2, Layout, Eye, Settings, Zap, Wrench } from 'lucide-react'
 import { skillCategories } from '@/data/skills'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 const iconMap = { Code2, Layout, Eye, Settings, Zap, Wrench } as const
 
 export default function Skills() {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: '-100px' })
+  const { lang, t } = useLanguage()
 
   return (
     <section id="skills" className="py-24 px-4 bg-slate-50 dark:bg-slate-900/40">
@@ -22,10 +24,10 @@ export default function Skills() {
           className="text-center mb-16"
         >
           <span className="text-sky-500 text-sm font-semibold tracking-widest uppercase mb-4 block">
-            Habilidades
+            {t.skills.label}
           </span>
           <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white">
-            Stack técnico
+            {t.skills.title}
           </h2>
         </motion.div>
 
@@ -35,7 +37,7 @@ export default function Skills() {
 
             return (
               <motion.div
-                key={category.name}
+                key={category.icon}
                 initial={{ opacity: 0, y: 30 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.5, delay: index * 0.08 }}
@@ -45,7 +47,9 @@ export default function Skills() {
                   <div className="p-2 rounded-lg bg-sky-100 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400">
                     <Icon size={18} />
                   </div>
-                  <h3 className="font-semibold text-slate-900 dark:text-white">{category.name}</h3>
+                  <h3 className="font-semibold text-slate-900 dark:text-white">
+                    {category.name[lang]}
+                  </h3>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {category.skills.map((skill) => (
